@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Suhan 🎉 — From Minhaz</title>
+<style>
+:root{
+  --bg:#fff7ff; --p1:#dff6ff; --p2:#e9ffe7; --accent:#6ecfff; --dark:#123;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(135deg,var(--p2),var(--p1));overflow:hidden;}
+.container{width:100%;height:100%;position:relative;display:grid;place-items:center;}
+.bubble{display:inline-flex;align-items:center;gap:12px;padding:18px 22px;border-radius:999px;background:linear-gradient(90deg,#fff,#fff7);box-shadow:0 8px 30px rgba(0,0,0,0.08);cursor:pointer;user-select:none;animation:bounce 1s ease-in-out infinite;}
+.icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#fff,#fff);display:grid;place-items:center;font-size:22px;}
+.label{font-weight:700;color:var(--dark);}
+@keyframes bounce{0%{transform:translateY(0)}40%{transform:translateY(-16px)}70%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+
+.envelope{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(0);width:260px;height:160px;border-radius:12px;background:linear-gradient(180deg,#fff,#e7f9ff);box-shadow:0 10px 30px rgba(10,10,30,0.12);display:flex;align-items:center;justify-content:center;flex-direction:column;overflow:visible;transition:opacity 0.5s,transform 0.5s;}
+.env-flap{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:220px;height:80px;background:linear-gradient(180deg,#bceeff,#9fdfff);clip-path:polygon(0 100%,50% 0,100% 100%);border-radius:12px;transition:transform 0.6s;}
+.card{width:220px;border-radius:10px;background:linear-gradient(180deg,#fff,#f6fdff);display:block;text-align:center;padding:12px;box-shadow:0 8px 20px rgba(0,0,0,0.08);opacity:0;transition:transform 0.7s,opacity 0.7s;}
+.card h2{margin:6px 0 0;font-size:20px;color:var(--dark);}
+.card p{margin:6px 0;color:#5b5b6a;font-size:14px;}
+
+.envelope.show{transform:translate(-50%,-50%) scale(1);}
+.env-flap.open{transform:translateX(-50%) rotateX(180deg);}
+.card.show{opacity:1;transform:translateY(-6px);}
+
+.balloon{position:absolute;width:46px;height:60px;border-radius:50% 50% 46% 46%;display:grid;place-items:center;font-weight:700;opacity:0;}
+.string{position:absolute;bottom:-36px;left:50%;width:2px;height:36px;background:rgba(0,0,0,0.06);}
+
+.wish{position:absolute;left:50%;top:30%;transform:translateX(-50%);text-align:center;pointer-events:none;opacity:0;}
+.wish p{margin:6px 0;font-weight:700;color:var(--dark);transform:translateY(20px);opacity:0;transition:all 0.6s ease;}
+#wishFull{opacity:0;margin-top:12px;font-size:16px;transition:all 1s ease;}
+
+#wishPic{
+  width:140px;
+  border-radius:12px;
+  margin-bottom:12px;
+  opacity:0;
+  transition:1s ease;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="bubble" class="bubble">
+    <div class="icon">✉️</div>
+    <div class="label">Sent by Minhaz</div>
+  </div>
+
+  <div id="envelope" class="envelope">
+    <div class="env-flap" id="envFlap"></div>
+    <div id="card" class="card">
+      
+      <!-- ⭐ SUHAN PICTURE INSIDE CARD -->
+      <img src="suhan.jpg" style="width:100%;border-radius:8px;margin-bottom:10px;">
+
+      <h2>Happy Birthday, Suhan 🎂🎉</h2>
+      <p>Wishing you joy, strength, and endless laughter!</p>
+    </div>
+  </div>
+
+  <div id="balloons"></div>
+
+  <div class="wish" id="wish">
+
+    <!-- ⭐ SUHAN PICTURE FINAL FADE-IN -->
+    <img id="wishPic" src="suhan.jpg">
+
+    <p>🎉 Happy Birthday, Suhan! 🎉</p>
+    <p>You’re one of a kind — genuine, funny, and full of good energy.</p>
+    <p>Hope your day shines as bright as your vibe!</p>
+    <p>Keep growing, smiling, and achieving great things 🚀</p>
+
+    <p id="wishFull">🎈🎉 Happy Birthday, Suhan! You deserve every ounce of happiness, laughter, and success. Keep shining, bro! 🎉🎈</p>
+  </div>
+</div>
+
+<!-- Songs -->
+<audio id="singingSong" src="m1.mp3" preload="auto"></audio>
+<audio id="pianoBG" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" loop></audio>
+
+<script>
+const bubble = document.getElementById('bubble');
+const envelope = document.getElementById('envelope');
+const envFlap = document.getElementById('envFlap');
+const card = document.getElementById('card');
+const balloonsRoot = document.getElementById('balloons');
+const wish = document.getElementById('wish');
+const wishFull = document.getElementById('wishFull');
+const wishPic = document.getElementById('wishPic');
+const singingSong = document.getElementById('singingSong');
+const pianoBG = document.getElementById('pianoBG');
+let played = false;
+
+function spawnBalloons(count){
+  const colors=['#bceeff','#fff2b8','#c9f3ff','#d7f7d9','#d0e1ff','#ffd8b3'];
+  for(let i=0;i<count;i++){
+    const b=document.createElement('div');
+    b.className='balloon';
+    const left = 10+Math.random()*80;
+    const size = 36+Math.random()*28;
+    b.style.left = left+'%';
+    b.style.width = size+'px';
+    b.style.height = size*1.25+'px';
+    b.style.background = colors[Math.floor(Math.random()*colors.length)];
+    b.innerHTML='<div class="string"></div>';
+    balloonsRoot.appendChild(b);
+    setTimeout(()=>{b.style.opacity=1;},100);
+
+    const floatDuration = 8000 + Math.random()*4000;
+    b.animate([{transform:`translateY(0)`},{transform:`translateY(-${400+Math.random()*200}px)`}],{duration:floatDuration, iterations:Infinity, easing:'linear'});
+  }
+}
+
+function showWish(){
+  envelope.style.opacity=0;
+  card.style.opacity=0;
+
+  const lines = wish.querySelectorAll('p:not(#wishFull)');
+  wish.style.opacity=1;
+
+  lines.forEach((line,index)=>{
+    setTimeout(()=>{
+      line.style.opacity=1;
+      line.style.transform='translateY(0)';
+    }, index*800);
+  });
+
+  // show big picture
+  setTimeout(()=>{
+    wishPic.style.opacity = 1;
+  }, 600);
+
+  // final long wish fade-in
+  setTimeout(()=>{
+    wishFull.style.opacity=1;
+  }, lines.length*800 + 600);
+
+  pianoBG.play().catch(err=>console.log(err));
+}
+
+bubble.addEventListener('click', ()=>{
+  if(played) return;
+  played=true;
+  bubble.style.animation='none';
+  envelope.classList.add('show');
+  setTimeout(()=>{envFlap.classList.add('open');},220);
+  setTimeout(()=>{card.classList.add('show'); spawnBalloons(12);},420);
+
+  singingSong.play().then(()=>{
+    setTimeout(showWish, 16000);
+  }).catch(err=>{
+    console.log("Audio play blocked:",err);
+    alert("Please allow audio to play!");
+  });
+
+  singingSong.addEventListener('ended', showWish);
+});
+</script>
+</body>
+</html>
